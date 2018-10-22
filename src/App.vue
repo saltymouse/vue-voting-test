@@ -83,11 +83,15 @@ export default {
         button => button === this.user.selectedButton
       );
 
-      if (clickedButton === previouslySelectedButton) return false;
+      if (clickedButton === previouslySelectedButton) {
+        return false;
+      }
 
-      this.user.selectedButton = clickedButton;
+      if (previouslySelectedButton) {
+        previouslySelectedButton.count -= 1;
+      }
       clickedButton.count += 1;
-      previouslySelectedButton.count -= 1;
+      this.user.selectedButton = clickedButton;
     }
   }
 };
