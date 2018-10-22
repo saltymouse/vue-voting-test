@@ -2,7 +2,7 @@
   <div class="voting-button">
     <div
       class="voting-button__icon"
-      v-bind:class="{ cast : item.cast }"
+      :class="{ cast: selected }"
       @click="buttonClicked(item)" :item="item"
     >
 
@@ -18,7 +18,7 @@
 <script>
 export default {
   name: 'VoteButton', // how we reference the import from other components
-  props: ['item'],
+  props: ['item', 'selected'],
   data() {
     return {}
   },

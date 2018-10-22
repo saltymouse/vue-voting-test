@@ -13,10 +13,11 @@
       <div class="voting__buttons">
 
         <VoteButton
-          v-for="item in this.buttons"
-          :item="item"
-          :key="item.id"
-          @button-clicked="updateVotes(item)"
+          v-for="button in buttons"
+          :selected="button === user.selectedButton"
+          :item="button"
+          :key="button.id"
+          @button-clicked="castVote(button)"
         />
       </div>
       <span v-if="user.hasVoted" class="voting__thanks">
@@ -30,14 +31,14 @@
 </template>
 
 <script>
-import VoteButton from './components/VoteButton.vue';
+import VoteButton from "./components/VoteButton.vue";
 
-import EmojiSmile from './assets/grinning-face.png';
-import EmojiNeutral from './assets/neutral-face.png';
-import EmojiUnamused from './assets/unamused-face.png';
+import EmojiSmile from "./assets/grinning-face.png";
+import EmojiNeutral from "./assets/neutral-face.png";
+import EmojiUnamused from "./assets/unamused-face.png";
 
 export default {
-  name: 'app',
+  name: "app",
   components: {
     VoteButton
   },
@@ -45,21 +46,21 @@ export default {
     return {
       buttons: [
         {
-          id: 'good',
+          id: "good",
           // emoji: '😀',
           icon: EmojiSmile,
           count: Math.floor(Math.random() * 100),
           cast: false
         },
         {
-          id: 'average',
+          id: "average",
           // emoji: '😐',
           icon: EmojiNeutral,
           count: Math.floor(Math.random() * 20),
           cast: false
         },
         {
-          id: 'bad',
+          id: "bad",
           // emoji: '😒',
           icon: EmojiUnamused,
           count: Math.floor(Math.random() * 10),
@@ -67,11 +68,9 @@ export default {
         }
       ],
       user: {
-        hasVoted: false,
-        castVote: undefined,
-        miPoint: false
+        selectedButton: undefined
       }
-    }
+    };
   },
   computed: {
     voteTotal() {
@@ -79,43 +78,24 @@ export default {
     }
   },
   methods: {
-    updateVotes(clickedButton) {
-      if (this.user.hasVoted) {
-        this.changeVote(clickedButton);
-      } else {
-        this.buttons.forEach( (currentButton, index) => {
-          if (currentButton.id === clickedButton.id) {
-            this.buttons[index].count += 1;
-            this.buttons[index].cast = true;
-          }
-        });
-        this.updateUserStatus(clickedButton);
-      }
-    },
-    updateUserStatus(clickedButton) {
-      this.user.castVote = clickedButton.id;
-      this.user.hasVoted = !this.user.hasVoted;
-    },
-    changeVote(clickedButton) {
-      if (clickedButton.id === this.user.castVote) {
-        this.user.hasVoted = false;
-        this.buttons.forEach( (currentButton, index) => {
-          if (currentButton.id === clickedButton.id) {
-            this.buttons[index].count -= 1;
-            this.buttons[index].cast = false;
-          }
-        });
-      } else {
-        console.log('undo your original vote before switching')
-      }
+    castVote(clickedButton) {
+      const previouslySelectedButton = this.buttons.find(
+        button => button === this.user.selectedButton
+      );
+
+      if (clickedButton === previouslySelectedButton) return false;
+
+      this.user.selectedButton = clickedButton;
+      clickedButton.count += 1;
+      previouslySelectedButton.count -= 1;
     }
   }
-}
+};
 </script>
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: left;
